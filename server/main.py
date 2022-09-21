@@ -1,10 +1,23 @@
 import time
 
+from flask import Flask
+
+app = Flask(__name__)
+
 import boto3
 from boto3.dynamodb.conditions import Attr
 
 MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 
+
+@app.route("/environmental_data")
+def environmental_data():
+    timestamps, temperatures, humidities = get_environmental_data()
+    return {
+        "timestamps": timestamps,
+        "temperatures": temperatures,
+        "humidities": humidities
+    }
 
 def get_environmental_data(device_name='esp32-thermostat', history=1):
     """
