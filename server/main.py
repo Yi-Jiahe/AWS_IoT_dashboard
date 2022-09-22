@@ -22,12 +22,8 @@ def environmental_data():
     except (ValueError, TypeError):
         history = 1
 
-    timestamps, temperatures, humidities = get_environmental_data(device_name=device_name, history=history)
-    return {
-        "timestamps": timestamps,
-        "temperatures": temperatures,
-        "humidities": humidities
-    }
+    return get_environmental_data(device_name=device_name, history=history)
+
 
 def get_environmental_data(device_name='esp32-thermostat', history=1):
     """
@@ -48,14 +44,11 @@ def get_environmental_data(device_name='esp32-thermostat', history=1):
         FilterExpression=Attr('device_id').eq(device_name) & Attr('sample_time').gt(time_start)
     )
     items = response['Items']
-    timestamps, temperatures, humidities = [], [], []
-    for item in items:
-        timestamps.append(item['sample_time'])
-        data = item['device_data']
-        temperatures.append(data['temperature'])
-        humidities.append(data['humidity'])
-
-    return timestamps, temperatures, humidities
+    return [{
+        "timestamp": item['sample_time'], 
+        "temperature": item['device_data']['temperature'],
+        "humidity": item['device_data']['humidity']
+        } for item in items]
 
 
 if __name__ == '__main__':
