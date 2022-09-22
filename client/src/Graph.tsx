@@ -1,9 +1,17 @@
 import React from 'react';
 
-function Graph() {
-    
+type EnvironmentalData = {
+    timestamps: Array<number>;
+    temperatures: Array<number>;
+    humidities: Array<number>; 
+};
+
+function Graph({data}: {data: EnvironmentalData}) {
+    console.log(data);
 
     return (<div>
 
     </div>);
 }
+
+export {Graph};
