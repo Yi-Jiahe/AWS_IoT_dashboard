@@ -15,11 +15,11 @@ MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 @app.route("/environmental_data")
 def environmental_data():
     device_name = request.args.get('device_name')
-    device_name = device_name if device_name != '' else 'esp32-thermostat'
+    device_name = device_name if device_name else 'esp32-thermostat'
     history = request.args.get('history')
     try:
-        history = float(history)
-    except ValueError:
+        history = int(history)
+    except (ValueError, TypeError):
         history = 1
 
     timestamps, temperatures, humidities = get_environmental_data(device_name=device_name, history=history)
@@ -37,8 +37,10 @@ def get_environmental_data(device_name='esp32-thermostat', history=1):
     :param history: Number of days of history to include
     :return: 3 lists containing the timestamps, temperature and humiditiy data respectively
     """
+    print(device_name, history)
+
     time_now = round(time.time() * 1000)
-    time_start = time_now - history * MILLISECONDS_PER_DAY
+    time_start = time_now - round(history * MILLISECONDS_PER_DAY)
 
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('environmental_data')

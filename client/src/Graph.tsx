@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 type EnvironmentalData = {
     timestamps: Array<number>;
@@ -7,10 +7,12 @@ type EnvironmentalData = {
 };
 
 function Graph({data}: {data: EnvironmentalData}) {
-    console.log(data);
+    useEffect(() => {
+        console.log(data);
+    }, []);
 
     return (<div>
-
+        {data.humidities}
     </div>);
 }
 
