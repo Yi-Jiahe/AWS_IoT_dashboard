@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import * as d3 from "d3";
+import React, { useEffect, useRef, useState } from 'react';
+import Plot from 'react-plotly.js';
 
 // type EnvironmentalData = {
 //     timestamps: Array<number>;
@@ -10,25 +10,38 @@ import * as d3 from "d3";
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 
 // function Graph({data}: {data: EnvironmentalData}) {
-function Graph({data}) {
+function Graph({environmentData}) {
+    const [plotData, setPlotData] = useState([]);
+
     useEffect(() => {
-        console.log("data", data);
+        console.log("data-in", environmentData);
 
-        // Milliseconds since epoch
-        const timeNow = new Date().getTime();
+        const timestamps = [];
+        const temperatures = [];
+        const humidities = [];
 
+        let data = environmentData.filter((d) => {return d['temperature'] !== null;});
 
-        const svg = d3.select('svg');
-        svg.selectAll('circle')
-        .data(data)
-        .join('circle')
-        .attr('cx', d => (timeNow - d['timestamp']) / MILLISECONDS_PER_DAY * 10)
-        .attr('cy', d => d['temperature'])
-        .attr('r', 5);
-    }, [data]);
+        data = environmentData.sort((a,b) => parseInt(a['timestamp']) < parseInt(b['timestamp']));
+
+        environmentData.forEach((d) => {
+            timestamps.push(parseInt(d['timestamp']));
+            temperatures.push(d['temperature']);
+            humidities.push(d['humidity']);
+        });
+
+        data = [{
+            x: timestamps,
+            y: temperatures
+        }];
+
+        console.log("data-out", data);
+
+        setPlotData(data);
+    }, [environmentData]);
 
     return (<div>
-        <svg width={300} height={400} />
+        <Plot data={plotData}/>
     </div>);
 }
 
