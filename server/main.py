@@ -1,6 +1,6 @@
 import time
 
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -14,7 +14,15 @@ MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
 
 @app.route("/environmental_data")
 def environmental_data():
-    timestamps, temperatures, humidities = get_environmental_data()
+    device_name = request.args.get('device_name')
+    device_name = device_name if device_name != '' else 'esp32-thermostat'
+    history = request.args.get('history')
+    try:
+        history = float(history)
+    except ValueError:
+        history = 1
+
+    timestamps, temperatures, humidities = get_environmental_data(device_name=device_name, history=history)
     return {
         "timestamps": timestamps,
         "temperatures": temperatures,
@@ -35,7 +43,7 @@ def get_environmental_data(device_name='esp32-thermostat', history=1):
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table('environmental_data')
     response = table.scan(
-        FilterExpression=Attr('device_id').eq('esp32-thermostat') & Attr('sample_time').gt(time_start)
+        FilterExpression=Attr('device_id').eq(device_name) & Attr('sample_time').gt(time_start)
     )
     items = response['Items']
     timestamps, temperatures, humidities = [], [], []
