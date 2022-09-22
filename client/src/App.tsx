@@ -53,7 +53,7 @@ function App() {
           </label>
           <input type="submit" value="Retrieve Data"/>
         </form>
-        <Graph data={environmentalData} />
+        <Graph environmentData={environmentalData} />
       </header>
     </div>
   );
