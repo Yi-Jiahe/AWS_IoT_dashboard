@@ -5,21 +5,16 @@ import { Graph } from './Graph';
 function App() {
   const [deviceName, setDeviceName] = useState('esp32-thermostat');
   const [history, setHistory] = useState(1);
-  const [environmentalData, setEnvironmentalData] = useState({
-    "timestamps": [],
-    "temperatures": [],
-    "humidities": []
-  });
+  const [environmentalData, setEnvironmentalData] = useState([]);
 
   const getEnvironmentalData = useCallback(() => {
+    console.log('initial_data', environmentalData);
+
     fetch(`http://127.0.0.1:5000/environmental_data?device_name=${deviceName}&history=${history}`)
     .then(data=>{return data.json()})
     .then(res=>{
-      setEnvironmentalData({
-        "timestamps": res["timestamps"],
-        "temperatures": res["temperatures"],
-        "humidities": res["humidities"]
-      });
+      console.log("response", res);
+      setEnvironmentalData(res);
     });
   }, [deviceName, history]);
 

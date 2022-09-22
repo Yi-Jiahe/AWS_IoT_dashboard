@@ -7,17 +7,28 @@ import * as d3 from "d3";
 //     humidities: Array<number>; 
 // };
 
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000
+
 // function Graph({data}: {data: EnvironmentalData}) {
 function Graph({data}) {
     useEffect(() => {
+        console.log("data", data);
+
+        // Milliseconds since epoch
+        const timeNow = new Date().getTime();
+
+
         const svg = d3.select('svg');
         svg.selectAll('circle')
-        // .data(data)
-        // .enter();
-    }, []);
+        .data(data)
+        .join('circle')
+        .attr('cx', d => (timeNow - d['timestamp']) / MILLISECONDS_PER_DAY * 10)
+        .attr('cy', d => d['temperature'])
+        .attr('r', 5);
+    }, [data]);
 
     return (<div>
-        <svg/>
+        <svg width={300} height={400} />
     </div>);
 }
 
