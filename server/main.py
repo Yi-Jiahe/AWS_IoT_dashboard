@@ -43,12 +43,13 @@ def get_environmental_data(device_name='esp32-thermostat', history=1):
     response = table.scan(
         FilterExpression=Attr('device_id').eq(device_name) & Attr('sample_time').gt(time_start)
     )
-    items = response['Items']
-    return [{
-        "timestamp": item['sample_time'], 
-        "temperature": item['device_data']['temperature'],
-        "humidity": item['device_data']['humidity']
-        } for item in items]
+    items = sorted([{
+        'timestamp': int(item['sample_time']), 
+        'temperature': item['device_data']['temperature'],
+        'humidity': item['device_data']['humidity']
+        } for item in response['Items'] if item['device_data']['temperature'] and item['device_data']['humidity']],
+        key=lambda x: x['timestamp'])
+    return items
 
 
 if __name__ == '__main__':
