@@ -1,3 +1,5 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
-# Create your views here.
+
+def environmental_data(request):
+    return HttpResponse("Hello, world. Here's some environmental data.")
